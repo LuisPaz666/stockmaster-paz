@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 
-RUN npm version && npm ci
+RUN npm version && NODE_ENV=development npm ci
 
 COPY . .
 

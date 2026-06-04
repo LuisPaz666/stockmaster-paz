@@ -21,12 +21,14 @@ import * as fs from 'fs';
           entities: ['dist/**/*.entity.js'],
           synchronize: config.get('NODE_ENV') !== 'production',
           logging: config.get('NODE_ENV') !== 'production',
-          ssl: sslCaPath
+          ssl: sslCaPath && fs.existsSync(sslCaPath)
             ? {
                 ca: fs.readFileSync(sslCaPath).toString(),
                 rejectUnauthorized: true,
               }
-            : undefined,
+            : sslCaPath
+              ? { rejectUnauthorized: false }
+              : undefined,
         };
       },
     }),

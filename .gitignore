@@ -19,9 +19,6 @@ yarn-error.log*
 *.sln
 *.sw?
 
-# Certificados SSL
-ca.pem
-
 # Archivos del sistema
 .DS_Store
 Thumbs.db   

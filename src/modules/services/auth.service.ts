@@ -21,10 +21,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  // ─── Registro ────────────────────────────────────────────────────────────────
-
   async register(dto: CreateUserDto) {
-    // Verificar si el email ya existe
     const existe = await this.usersRepository.findOne({
       where: { email: dto.email },
     });
@@ -32,26 +29,21 @@ export class AuthService {
       throw new ConflictException('Ya existe un usuario con ese email');
     }
 
-    // Encriptar contraseña
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(dto.password, saltRounds);
 
-    // Crear y guardar usuario
     const usuario = this.usersRepository.create({
       ...dto,
       password: passwordHash,
     });
     await this.usersRepository.save(usuario);
 
-    // Retornar sin la contraseña
-    const { password: _password, ...resultado } = usuario;
+    const { password: _pw, ...resultado } = usuario;
+    void _pw;
     return resultado;
   }
 
-  // ─── Login ───────────────────────────────────────────────────────────────────
-
   async login(dto: LoginDto) {
-    // Buscar usuario por email
     const usuario = await this.usersRepository.findOne({
       where: { email: dto.email, isActive: true },
     });
@@ -60,13 +52,11 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales incorrectas');
     }
 
-    // Verificar contraseña
     const passwordValida = await bcrypt.compare(dto.password, usuario.password);
     if (!passwordValida) {
       throw new UnauthorizedException('Credenciales incorrectas');
     }
 
-    // Generar access token (8 horas)
     const payload: JwtPayload = {
       sub: usuario.id,
       email: usuario.email,
@@ -74,17 +64,15 @@ export class AuthService {
     };
     const access_token = this.jwtService.sign(payload);
 
-    // Generar refresh token (7 días)
     const refreshPayload = {
       sub: usuario.id,
       email: usuario.email,
       type: 'refresh',
     };
     const refresh_token = this.jwtService.sign(refreshPayload, {
-      expiresIn: 7 * 24 * 60 * 60, // 7 días
+      expiresIn: 7 * 24 * 60 * 60,
     });
 
-    // Guardar refresh token en BD
     await this.usersRepository.update(usuario.id, {
       refreshToken: refresh_token,
     });
@@ -101,25 +89,20 @@ export class AuthService {
     };
   }
 
-  // ─── Perfil ──────────────────────────────────────────────────────────────────
-
   async getProfile(userId: number) {
     const usuario = await this.usersRepository.findOne({
       where: { id: userId },
     });
     if (!usuario) throw new UnauthorizedException();
-    const { password: _password, ...perfil } = usuario;
+    const { password: _pw, ...perfil } = usuario;
+    void _pw;
     return perfil;
   }
 
-  // ─── Refresh Token ───────────────────────────────────────────────────────────
-
   async refreshAccessToken(refreshToken: string) {
     try {
-      // Validar que el token JWT sea válido
       const decoded = this.jwtService.verify(refreshToken);
 
-      // Buscar usuario y validar que el refresh token coincida
       const usuario = await this.usersRepository.findOne({
         where: { id: decoded.sub },
       });
@@ -128,7 +111,6 @@ export class AuthService {
         throw new UnauthorizedException('Refresh token inválido o expirado');
       }
 
-      // Generar nuevo access token
       const payload: JwtPayload = {
         sub: usuario.id,
         email: usuario.email,
@@ -146,15 +128,12 @@ export class AuthService {
           rol: usuario.rol,
         },
       };
-    } catch (_error) {
+    } catch {
       throw new UnauthorizedException('Refresh token inválido o expirado');
     }
   }
 
-  // ─── Logout ───────────────────────────────────────────────────────────────────
-
   async logout(userId: number) {
-    // Limpiar el refresh token del usuario en la BD
     await this.usersRepository.update(userId, { refreshToken: null });
 
     return {

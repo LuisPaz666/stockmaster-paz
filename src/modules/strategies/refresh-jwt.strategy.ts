@@ -27,7 +27,7 @@ export class RefreshJwtStrategy extends PassportStrategy(
    * Este método se llama automáticamente si el token es válido.
    * Lo que retorne aquí queda en request.user
    */
-  async validate(payload: RefreshJwtPayload) {
+  validate(payload: RefreshJwtPayload) {
     if (!payload.sub || payload.type !== 'refresh') {
       throw new UnauthorizedException('Token de refresh inválido');
     }

@@ -12,7 +12,11 @@ async function bootstrap() {
 
   // ── CORS para el frontend de pruebas ─────────────────────────
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://localhost:8080', 'http://localhost:8081'],
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:8080',
+      'http://localhost:8081',
+    ],
     credentials: true,
   });
 
@@ -40,7 +44,7 @@ async function bootstrap() {
 
   // ── Swagger ───────────────────────────────────────────────────
   const config = new DocumentBuilder()
-    .setTitle('StockMaster API')
+    .setTitle('LuisPaz')
     .setDescription('Sistema de Gestión de Inventarios — Caso Práctico 3')
     .setVersion('1.0')
     .addBearerAuth(

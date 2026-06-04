@@ -70,7 +70,7 @@ export class AuthController {
     status: 401,
     description: 'Refresh token inválido o expirado',
   })
-  async refresh(@Body() dto: RefreshTokenDto) {
+  refresh(@Body() dto: RefreshTokenDto) {
     return this.authService.refreshAccessToken(dto.refresh_token);
   }
 
@@ -81,7 +81,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Cerrar sesión e invalidar refresh token' })
   @ApiResponse({ status: 200, description: 'Sesión cerrada correctamente' })
   @ApiResponse({ status: 401, description: 'No autorizado' })
-  async logout(@Request() req: any) {
+  logout(@Request() req: any) {
     return this.authService.logout(req.user?.id as number);
   }
 }

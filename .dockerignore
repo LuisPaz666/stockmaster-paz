@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.git/
+.gitignore
+.env
+.env.example
+.env.local
+.env.production
+frontend/
+.gitkeep
+README.md
+*.md
+.vscode/
+.idea/
